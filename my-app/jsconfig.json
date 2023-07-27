@@ -1,6 +1,0 @@
-// Giúp đường dẫn gọn gàng hơn
-{
-	"compilerOptions": {
-		"baseUrl": "./src"
-	}
-}
