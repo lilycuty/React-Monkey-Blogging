@@ -16,4 +16,4 @@ const app = initializeApp(firebaseConfig);
 
 //Init services (Fire store : Thêm,sửa,xoá,truy xuất database)
 export const db = getFirestore(app);
-export const auth = getAuth(db);
+export const auth = getAuth(app);
