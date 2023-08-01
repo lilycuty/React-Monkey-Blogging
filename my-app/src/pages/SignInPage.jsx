@@ -15,7 +15,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase/firebase-config';
 
 const schema = yup.object({
-	fullname: yup.string().required('Please enter your fullname'),
 	email: yup
 		.string()
 		.email('Please enter valid email address')
@@ -106,6 +105,7 @@ const SignInPage = () => {
 				<Button
 					type="submit"
 					style={{
+						width: '100%',
 						maxWidth: 300,
 						margin: '0 auto',
 					}}
