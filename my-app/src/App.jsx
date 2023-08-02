@@ -6,6 +6,8 @@ import SignInPage from './pages/SignInPage';
 import HomePage from './pages/HomePage';
 import NotFoundPage from './pages/NotFoundPage';
 import PostDetailsPage from './pages/PostDetailsPage';
+import DashboardPage from './pages/DashboardPage';
+import DashboardLayout from './module/dashboard/DashboardLayout';
 
 const App = () => {
 	return (
@@ -20,6 +22,12 @@ const App = () => {
 						path="/:slug"
 						element={<PostDetailsPage></PostDetailsPage>}
 					></Route>
+					<Route element={<DashboardLayout></DashboardLayout>}>
+						<Route
+							path="/dashboard"
+							element={<DashboardPage></DashboardPage>}
+						></Route>
+					</Route>
 				</Routes>
 			</AuthProvider>
 		</div>

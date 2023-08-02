@@ -8,4 +8,5 @@ export const theme = {
 	grayF3: '#f3edff',
 	gray6B: '#6b6b6b',
 	gray23: '#232323',
+	gray80: '#808191',
 };

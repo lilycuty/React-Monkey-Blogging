@@ -208,7 +208,7 @@ const PostDetailsPage = () => {
 					</div>
 
 					<div className="post-related">
-						<Heading>Bài viết liên quan</Heading>
+						<Heading className="!text-[#23BB86]">Bài viết liên quan</Heading>
 						<div className="grid-layout grid-layout--primary">
 							<PostItem></PostItem>
 							<PostItem></PostItem>
