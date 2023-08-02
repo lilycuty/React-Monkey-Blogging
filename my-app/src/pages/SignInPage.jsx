@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/auth-context';
 import { NavLink, useNavigate } from 'react-router-dom';
 import AuthenticationPage from './AuthenticationPage';
 import { useForm } from 'react-hook-form';
 import { Field } from '../components/field';
 import { Label } from '../components/label';
-import { Input } from '../components/input';
-import { IconEyeClose, IconEyeOpen } from '../components/icon';
+import { Input, InputPasswordToggle } from '../components/input';
 import { Button } from '../components/button';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,8 +25,6 @@ const schema = yup.object({
 });
 
 const SignInPage = () => {
-	const [togglePassword, setTogglePassowrd] = useState(false);
-
 	const {
 		handleSubmit,
 		control,
@@ -79,26 +76,11 @@ const SignInPage = () => {
 				</Field>
 				<Field>
 					<Label htmlFor="password">Password</Label>
-					<Input
-						name="password"
-						type={`${togglePassword ? 'text' : 'password'}`}
-						placeholder="Enter your password"
-						control={control}
-					>
-						{togglePassword ? (
-							<IconEyeOpen
-								onClick={() => setTogglePassowrd(false)}
-							></IconEyeOpen>
-						) : (
-							<IconEyeClose
-								onClick={() => setTogglePassowrd(true)}
-							></IconEyeClose>
-						)}
-					</Input>
+					<InputPasswordToggle control={control}></InputPasswordToggle>
 				</Field>
 
 				<div className="have-account">
-					You have not had an account?
+					You have not had an account?{' '}
 					<NavLink to={'/sign-up'}> Register an account</NavLink>
 				</div>
 

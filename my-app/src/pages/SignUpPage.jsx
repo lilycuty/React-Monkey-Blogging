@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Label } from '../components/label';
-import { Input } from '../components/input';
+import { Input, InputPasswordToggle } from '../components/input';
 import { Field } from '../components/field';
-import { IconEyeClose, IconEyeOpen } from '../components/icon';
 import { Button } from '../components/button';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -75,8 +74,6 @@ const SignUpPage = () => {
 		navigate('/');
 	};
 
-	const [togglePassword, setTogglePassowrd] = useState(false);
-
 	//Using react-toastify to display errors
 	useEffect(() => {
 		const arrError = Object.values(errors);
@@ -114,27 +111,11 @@ const SignUpPage = () => {
 				</Field>
 				<Field>
 					<Label htmlFor="password">Password</Label>
-					<Input
-						name="password"
-						type={`${togglePassword ? 'text' : 'password'}`}
-						placeholder="Enter your password"
-						control={control}
-					>
-						{togglePassword ? (
-							<IconEyeOpen
-								onClick={() => setTogglePassowrd(false)}
-							></IconEyeOpen>
-						) : (
-							<IconEyeClose
-								onClick={() => setTogglePassowrd(true)}
-							></IconEyeClose>
-						)}
-					</Input>
+					<InputPasswordToggle control={control}></InputPasswordToggle>
 				</Field>
 
 				<div className="have-account">
-					You already have an account?
-					<NavLink to={'/sign-in'}> Login</NavLink>
+					You already have an account? <NavLink to={'/sign-in'}> Login</NavLink>
 				</div>
 
 				<Button
