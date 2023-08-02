@@ -39,10 +39,6 @@ const PostItemStyles = styled.div`
 			border-radius: 100rem;
 		}
 		&-title {
-			font-weight: bold;
-			line-height: 1.5;
-			display: block;
-			font-size: 18px;
 			margin-bottom: 8px;
 		}
 	}
@@ -57,9 +53,9 @@ const PostItem = () => {
 				/>
 			</div>
 			<PostCategory>Kiến thức</PostCategory>
-			<h3 className="post-title">
+			<PostItem>
 				Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
-			</h3>
+			</PostItem>
 			<div className="post-info">
 				<span className="post-time">Mar 23</span>
 				<span className="post-dot"></span>
