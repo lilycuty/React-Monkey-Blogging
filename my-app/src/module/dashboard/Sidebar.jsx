@@ -109,7 +109,6 @@ const SidebarStyles = styled.div`
 	background: #fff;
 	box-shadow: 10px 10px 20px rgba(218, 213, 213, 0.15);
 	border-radius: 12px;
-	padding-left: 20px;
 	.sidebar-logo {
 		display: flex;
 		align-items: center;

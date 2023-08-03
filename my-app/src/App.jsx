@@ -8,6 +8,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import PostDetailsPage from './pages/PostDetailsPage';
 import DashboardPage from './pages/DashboardPage';
 import DashboardLayout from './module/dashboard/DashboardLayout';
+import PostManage from './module/post/PostManage';
 
 const App = () => {
 	return (
@@ -26,6 +27,10 @@ const App = () => {
 						<Route
 							path="/dashboard"
 							element={<DashboardPage></DashboardPage>}
+						></Route>
+						<Route
+							path="/manage/post"
+							element={<PostManage></PostManage>}
 						></Route>
 					</Route>
 				</Routes>
