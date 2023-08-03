@@ -5,29 +5,37 @@ import { Label } from '../../components/label';
 import { Input } from '../../components/input';
 import { useForm } from 'react-hook-form';
 import { Button } from '../../components/button';
-import { Checkbox, Radio } from '../../components/checkbox';
+import { Radio } from '../../components/checkbox';
 import { Dropdown } from '../../components/dropdown';
+import slugify from 'slugify';
+import { postStatus } from '../../utils/constants';
 
 const PostAddNewStyles = styled.div``;
+
 const PostAddNew = () => {
-	const { control, watch, setValue } = useForm({
+	const { watch, control, handleSubmit, setValue } = useForm({
 		mode: 'onChange',
 		defaultValues: {
-			status: '',
+			title: '',
+			slug: '',
+			status: 2,
 			category: '',
 		},
 	});
 
 	const watchStatus = watch('status');
-	console.log('PostAddNew ~ watchStatus', watchStatus);
 	const watchCategory = watch('category');
-	console.log('PostAddNew ~ watchCategory', watchCategory);
+
+	const addPostHandler = async (values) => {
+		values.slug = slugify(values.slug || values.title);
+		console.log('addPostHandler ~ values', values);
+	};
 
 	return (
 		<PostAddNewStyles>
 			<h1 className="dashboard-heading">Add new post</h1>
 
-			<form>
+			<form onSubmit={handleSubmit(addPostHandler)}>
 				<div className="grid grid-cols-2 gap-x-10 mb-10">
 					<Field>
 						<Label htmlFor="title">Title</Label>
@@ -35,6 +43,7 @@ const PostAddNew = () => {
 							name="title"
 							control={control}
 							placeholder="Enter your title"
+							required
 						></Input>
 					</Field>
 					<Field>
@@ -54,9 +63,8 @@ const PostAddNew = () => {
 							<Radio
 								name="status"
 								control={control}
-								checked={watchStatus === 'approved'}
-								onClick={() => setValue('status', 'approved')}
-								value="approved"
+								checked={Number(watchStatus) === postStatus.APPROVED}
+								value={postStatus.APPROVED}
 							>
 								Approved
 							</Radio>
@@ -64,9 +72,8 @@ const PostAddNew = () => {
 							<Radio
 								name="status"
 								control={control}
-								checked={watchStatus === 'pending'}
-								onClick={() => setValue('status', 'pending')}
-								value="pending"
+								checked={Number(watchStatus) === postStatus.PENDDING}
+								value={postStatus.PENDDING}
 							>
 								Pending
 							</Radio>
@@ -74,9 +81,8 @@ const PostAddNew = () => {
 							<Radio
 								name="status"
 								control={control}
-								checked={watchStatus === 'reject'}
-								onClick={() => setValue('status', 'reject')}
-								value="reject"
+								checked={Number(watchStatus) === postStatus.REJECTED}
+								value={postStatus.REJECTED}
 							>
 								Reject
 							</Radio>
@@ -112,3 +118,7 @@ const PostAddNew = () => {
 };
 
 export default PostAddNew;
+
+/**
+ * Khi sử dụng custom checkbox, radio, dropdown, toggle -> sử dụng watch để theo dõi sự thay đổi của nó
+ */

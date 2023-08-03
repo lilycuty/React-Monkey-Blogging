@@ -7,17 +7,16 @@ const Radio = ({ checked, children, control, name, ...rest }) => {
 		name,
 		defaultValue: '',
 	});
+
 	return (
 		<label>
 			<input
-				onChange={() => {}}
 				className="hidden-input"
 				checked={checked}
 				type="radio"
-				{...rest}
 				{...field}
+				{...rest}
 			/>
-
 			<div className="flex items-center gap-x-3 font-medium cursor-pointer">
 				<div
 					className={`w-7 h-7 rounded-full ${
