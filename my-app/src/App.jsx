@@ -9,6 +9,7 @@ import PostDetailsPage from './pages/PostDetailsPage';
 import DashboardPage from './pages/DashboardPage';
 import DashboardLayout from './module/dashboard/DashboardLayout';
 import PostManage from './module/post/PostManage';
+import PostAddNew from './module/post/PostAddNew';
 
 const App = () => {
 	return (
@@ -31,6 +32,10 @@ const App = () => {
 						<Route
 							path="/manage/post"
 							element={<PostManage></PostManage>}
+						></Route>
+						<Route
+							path="/manage/add-post"
+							element={<PostAddNew></PostAddNew>}
 						></Route>
 					</Route>
 				</Routes>
