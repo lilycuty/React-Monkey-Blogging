@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Field } from '../../components/field';
 import { Label } from '../../components/label';
@@ -9,11 +9,22 @@ import { Radio } from '../../components/checkbox';
 import { Dropdown } from '../../components/dropdown';
 import slugify from 'slugify';
 import { postStatus } from '../../utils/constants';
+import {
+	getStorage,
+	ref,
+	uploadBytesResumable,
+	getDownloadURL,
+	deleteObject,
+} from 'firebase/storage';
+import ImageUpload from '../../components/image/ImageUpload';
 
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
-	const { watch, control, handleSubmit, setValue } = useForm({
+	const [progress, setProgress] = useState(0);
+	const [image, setImage] = useState('');
+
+	const { watch, control, handleSubmit, setValue, getValues } = useForm({
 		mode: 'onChange',
 		defaultValues: {
 			title: '',
@@ -27,8 +38,67 @@ const PostAddNew = () => {
 	const watchCategory = watch('category');
 
 	const addPostHandler = async (values) => {
-		values.slug = slugify(values.slug || values.title);
-		console.log('addPostHandler ~ values', values);
+		const cloneValues = { ...values };
+		cloneValues.slug = slugify(cloneValues.slug || cloneValues.title);
+		cloneValues.status = Number(values.status);
+		handleUploadImage(cloneValues.image);
+		console.log('addPostHandler ~ cloneValues', cloneValues);
+	};
+
+	const handleUploadImage = (file) => {
+		const storage = getStorage();
+
+		const storageRef = ref(storage, 'images/' + file.name);
+		const uploadTask = uploadBytesResumable(storageRef, file);
+
+		uploadTask.on(
+			'state_changed',
+			(snapshot) => {
+				const progressPrecent =
+					(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				setProgress(progressPrecent);
+				switch (snapshot.state) {
+					case 'paused':
+						console.log('Upload is paused');
+						break;
+					case 'running':
+						console.log('Upload is running');
+						break;
+					default:
+						console.log('Nothing at all');
+				}
+			},
+			(error) => {
+				console.log('Error', error);
+			},
+			() => {
+				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+					console.log('File available at', downloadURL);
+					setImage(downloadURL);
+				});
+			}
+		);
+	};
+
+	const onSelectImage = (e) => {
+		const file = e.target.files[0];
+		if (!file) return;
+		setValue('image_name', file.name);
+		handleUploadImage(file);
+	};
+
+	const handleDeleteImage = () => {
+		const storage = getStorage();
+		const imageRef = ref(storage, 'images/' + getValues('image_name'));
+		deleteObject(imageRef)
+			.then(() => {
+				console.log('Remove image successfully');
+				setImage('');
+				setProgress(0);
+			})
+			.catch((error) => {
+				console.log('Can not delete image', error);
+			});
 	};
 
 	return (
@@ -57,6 +127,17 @@ const PostAddNew = () => {
 				</div>
 
 				<div className="grid grid-cols-2 gap-x-10 mb-10">
+					<Field>
+						<Label>Image</Label>
+						<ImageUpload
+							onChange={onSelectImage}
+							className="h-[250px]"
+							progress={progress}
+							image={image}
+							handleDeleteImage={handleDeleteImage}
+						></ImageUpload>
+					</Field>
+
 					<Field>
 						<Label>Status</Label>
 						<div className="flex items-center gap-x-5">
@@ -89,10 +170,10 @@ const PostAddNew = () => {
 						</div>
 					</Field>
 
-					<Field>
+					{/* <Field>
 						<Label>Author</Label>
 						<Input control={control} placeholder="Find the author"></Input>
-					</Field>
+					</Field> */}
 				</div>
 
 				<div className="grid grid-cols-2 gap-x-10 mb-10">
