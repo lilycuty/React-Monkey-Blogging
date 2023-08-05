@@ -10,7 +10,9 @@ import { postStatus } from '../../utils/constants';
 import ImageUpload from '../../components/image/ImageUpload';
 import useFirebaseImage from '../../hooks/useFirebaseImage';
 import Toggle from '../../components/toggle/Toggle';
-
+import { useEffect } from 'react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../firebase/firebase-config';
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -42,6 +44,23 @@ const PostAddNew = () => {
 		handleUploadImage(cloneValues.image);
 		console.log('addPostHandler ~ cloneValues', cloneValues);
 	};
+
+	useEffect(() => {
+		async function getData() {
+			const colRef = collection(db, 'categories');
+			const q = query(colRef, where('status', '==', 1));
+			const querySnapshot = await getDocs(q);
+			let results = [];
+			querySnapshot.forEach((doc) => {
+				results.push({
+					id: doc.id,
+					...doc.data(),
+				});
+			});
+			console.log('getData ~ results', results);
+		}
+		getData();
+	}, []);
 
 	return (
 		<PostAddNewStyles>
@@ -79,7 +98,23 @@ const PostAddNew = () => {
 							handleDeleteImage={handleDeleteImage}
 						></ImageUpload>
 					</Field>
+					<Field>
+						<Label>Category</Label>
+					</Field>
+					{/* <Field>
+						<Label>Author</Label>
+						<Input control={control} placeholder="Find the author"></Input>
+					</Field> */}
+				</div>
 
+				<div className="grid grid-cols-2 gap-x-10 mb-10">
+					<Field>
+						<Label>Feature post</Label>
+						<Toggle
+							on={watchHot === true}
+							onClick={() => setValue('hot', !watchHot)}
+						></Toggle>
+					</Field>
 					<Field>
 						<Label>Status</Label>
 						<div className="flex items-center gap-x-5">
@@ -111,22 +146,6 @@ const PostAddNew = () => {
 							</Radio>
 						</div>
 					</Field>
-
-					{/* <Field>
-						<Label>Author</Label>
-						<Input control={control} placeholder="Find the author"></Input>
-					</Field> */}
-				</div>
-
-				<div className="grid grid-cols-2 gap-x-10 mb-10">
-					<Field>
-						<Label>Feature post</Label>
-						<Toggle
-							on={watchHot === true}
-							onClick={() => setValue('hot', !watchHot)}
-						></Toggle>
-					</Field>
-					<Field></Field>
 				</div>
 
 				<Button type="submit" className="mx-auto">
