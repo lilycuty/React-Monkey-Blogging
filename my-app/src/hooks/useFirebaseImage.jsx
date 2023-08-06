@@ -14,6 +14,7 @@ export default function useFirebaseImage(setValue, getValues) {
 	if (!setValue || !getValues) return;
 
 	const handleUploadImage = (file) => {
+		console.log(file);
 		const storage = getStorage();
 
 		const storageRef = ref(storage, 'images/' + file.name);

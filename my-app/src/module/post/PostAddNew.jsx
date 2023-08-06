@@ -10,29 +10,27 @@ import { postStatus } from '../../utils/constants';
 import ImageUpload from '../../components/image/ImageUpload';
 import useFirebaseImage from '../../hooks/useFirebaseImage';
 import Toggle from '../../components/toggle/Toggle';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
+import { Dropdown } from '../../components/dropdown';
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
+	const [categories, setCategories] = useState([]);
+
 	const { watch, control, handleSubmit, setValue, getValues } = useForm({
 		mode: 'onChange',
 		defaultValues: {
 			title: '',
 			slug: '',
 			status: 2,
-			category: '',
+			categoryId: '',
 			hot: false,
 		},
 	});
-	const {
-		progress,
-		image,
-		handleDeleteImage,
-		handleSelectImage,
-		handleUploadImage,
-	} = useFirebaseImage(setValue, getValues);
+	const { progress, image, handleDeleteImage, handleSelectImage } =
+		useFirebaseImage(setValue, getValues);
 
 	const watchStatus = watch('status');
 	const watchHot = watch('hot');
@@ -41,7 +39,6 @@ const PostAddNew = () => {
 		const cloneValues = { ...values };
 		cloneValues.slug = slugify(cloneValues.slug || cloneValues.title);
 		cloneValues.status = Number(values.status);
-		handleUploadImage(cloneValues.image);
 		console.log('addPostHandler ~ cloneValues', cloneValues);
 	};
 
@@ -57,7 +54,7 @@ const PostAddNew = () => {
 					...doc.data(),
 				});
 			});
-			console.log('getData ~ results', results);
+			setCategories(results);
 		}
 		getData();
 	}, []);
@@ -100,6 +97,20 @@ const PostAddNew = () => {
 					</Field>
 					<Field>
 						<Label>Category</Label>
+						<Dropdown>
+							<Dropdown.Select></Dropdown.Select>
+							<Dropdown.List>
+								{categories.length > 0 &&
+									categories.map((item) => (
+										<Dropdown.Option
+											key={item.id}
+											onClick={() => setValue('categoryId', item.id)}
+										>
+											{item.name}
+										</Dropdown.Option>
+									))}
+							</Dropdown.List>
+						</Dropdown>
 					</Field>
 					{/* <Field>
 						<Label>Author</Label>
