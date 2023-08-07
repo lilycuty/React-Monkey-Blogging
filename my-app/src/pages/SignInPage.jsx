@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '../contexts/auth-context';
 import { NavLink, useNavigate } from 'react-router-dom';
 import AuthenticationPage from './AuthenticationPage';

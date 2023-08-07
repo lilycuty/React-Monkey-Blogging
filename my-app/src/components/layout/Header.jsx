@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { Button } from '../button';
 import { NavLink } from 'react-router-dom';
@@ -66,7 +65,6 @@ const getLastName = (name) => {
 
 const Header = () => {
 	const { userInfo } = useAuth();
-	console.log('Header ~ userInfo', userInfo);
 	return (
 		<HeaderStyles>
 			<div className="container">

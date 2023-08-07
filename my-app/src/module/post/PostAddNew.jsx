@@ -11,34 +11,65 @@ import ImageUpload from '../../components/image/ImageUpload';
 import useFirebaseImage from '../../hooks/useFirebaseImage';
 import Toggle from '../../components/toggle/Toggle';
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
 import { Dropdown } from '../../components/dropdown';
+import { useAuth } from '../../contexts/auth-context';
+import { toast } from 'react-toastify';
+
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
 	const [categories, setCategories] = useState([]);
+	const [selectCategory, setSelectCategory] = useState({});
+	const { userInfo } = useAuth();
 
-	const { watch, control, handleSubmit, setValue, getValues } = useForm({
+	const { control, watch, setValue, handleSubmit, getValues, reset } = useForm({
 		mode: 'onChange',
 		defaultValues: {
 			title: '',
 			slug: '',
 			status: 2,
-			categoryId: '',
 			hot: false,
+			image: '',
 		},
 	});
-	const { progress, image, handleDeleteImage, handleSelectImage } =
-		useFirebaseImage(setValue, getValues);
+	const {
+		progress,
+		image,
+		handleDeleteImage,
+		handleSelectImage,
+		handleResetUpload,
+	} = useFirebaseImage(setValue, getValues);
 
 	const watchStatus = watch('status');
 	const watchHot = watch('hot');
 
 	const addPostHandler = async (values) => {
 		const cloneValues = { ...values };
-		cloneValues.slug = slugify(cloneValues.slug || cloneValues.title);
+		cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {
+			lower: true,
+		});
 		cloneValues.status = Number(values.status);
+		const colRef = collection(db, 'posts');
+		await addDoc(colRef, {
+			...cloneValues,
+			image,
+			userId: userInfo.uid,
+		});
+		toast.success('Create new post successfully');
+
+		//Submit xong sẽ reset lại các trường
+		reset({
+			title: '',
+			slug: '',
+			status: 2,
+			categoryId: '',
+			hot: false,
+			image: '',
+		});
+		handleResetUpload();
+		setSelectCategory({});
 		console.log('addPostHandler ~ cloneValues', cloneValues);
 	};
 
@@ -58,6 +89,11 @@ const PostAddNew = () => {
 		}
 		getData();
 	}, []);
+
+	const handleClickSelect = (item) => {
+		setValue('categoryId', item.id);
+		setSelectCategory(item);
+	};
 
 	return (
 		<PostAddNewStyles>
@@ -104,13 +140,18 @@ const PostAddNew = () => {
 									categories.map((item) => (
 										<Dropdown.Option
 											key={item.id}
-											onClick={() => setValue('categoryId', item.id)}
+											onClick={() => handleClickSelect(item)}
 										>
 											{item.name}
 										</Dropdown.Option>
 									))}
 							</Dropdown.List>
 						</Dropdown>
+						{selectCategory?.name && (
+							<span className="inline-block p-3 text-green-600 font-semibold bg-green-100 text-sm rounded-lg">
+								{selectCategory?.name}
+							</span>
+						)}
 					</Field>
 					{/* <Field>
 						<Label>Author</Label>

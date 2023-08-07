@@ -1,8 +1,9 @@
-import React from 'react';
 import styled from 'styled-components';
 import DashboardHeader from './DashboardHeader';
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth-context';
+import NotFoundPage from '../../pages/NotFoundPage';
 
 const DashboardLayoutStyles = styled.div`
 	max-width: 1600px;
@@ -24,6 +25,10 @@ const DashboardLayoutStyles = styled.div`
 	}
 `;
 const DashboardLayout = () => {
+	//Chưa đăng nhập thì không vào được trang Dashboard
+	const { userInfo } = useAuth();
+	if (!userInfo) return <NotFoundPage></NotFoundPage>;
+
 	return (
 		<DashboardLayoutStyles>
 			<DashboardHeader></DashboardHeader>

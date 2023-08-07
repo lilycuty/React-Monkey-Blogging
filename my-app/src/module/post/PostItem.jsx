@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import PostCategory from './PostCategory';
 import PostTitle from './PostTitle';
