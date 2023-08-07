@@ -11,7 +11,14 @@ import ImageUpload from '../../components/image/ImageUpload';
 import useFirebaseImage from '../../hooks/useFirebaseImage';
 import Toggle from '../../components/toggle/Toggle';
 import { useEffect, useState } from 'react';
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import {
+	addDoc,
+	collection,
+	getDocs,
+	query,
+	serverTimestamp,
+	where,
+} from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
 import { Dropdown } from '../../components/dropdown';
 import { useAuth } from '../../contexts/auth-context';
@@ -56,6 +63,7 @@ const PostAddNew = () => {
 			...cloneValues,
 			image,
 			userId: userInfo.uid,
+			createAt: serverTimestamp,
 		});
 		toast.success('Create new post successfully');
 
@@ -77,6 +85,7 @@ const PostAddNew = () => {
 		async function getData() {
 			const colRef = collection(db, 'categories');
 			const q = query(colRef, where('status', '==', 1));
+			//getDocs: get dữ liệu 1 lần và không theo dõi sự thay đổi của dữ liệu
 			const querySnapshot = await getDocs(q);
 			let results = [];
 			querySnapshot.forEach((doc) => {

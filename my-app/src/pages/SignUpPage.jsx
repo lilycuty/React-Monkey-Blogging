@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Label } from '../components/label';
 import { Input, InputPasswordToggle } from '../components/input';
@@ -10,8 +10,9 @@ import { toast } from 'react-toastify';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '../firebase/firebase-config';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { addDoc, collection } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import AuthenticationPage from './AuthenticationPage';
+import slugify from 'slugify';
 
 const schema = yup.object({
 	fullname: yup.string().required('Please enter your fullname'),
@@ -32,8 +33,6 @@ const SignUpPage = () => {
 		control,
 		handleSubmit,
 		formState: { errors, isValid, isSubmitting },
-		watch,
-		reset,
 	} = useForm({
 		mode: 'onChange',
 		resolver: yupResolver(schema),
@@ -54,13 +53,20 @@ const SignUpPage = () => {
 			displayName: values.fullname,
 		});
 
-		const userRef = collection(db, 'users');
-		await addDoc(userRef, {
+		// const userRef = collection(db, 'users');
+		await setDoc(doc(db, 'users', auth.currentUser.uid), {
 			email: values.email,
 			password: values.password,
 			id: cred.user.uid,
 			fullname: values.fullname,
+			username: slugify(values.fullname, { lower: true }),
 		});
+		// await addDoc(userRef, {
+		// 	email: values.email,
+		// 	password: values.password,
+		// 	id: cred.user.uid,
+		// 	fullname: values.fullname,
+		// });
 
 		toast.success('Register successfully');
 
