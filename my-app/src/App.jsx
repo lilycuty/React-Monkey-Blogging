@@ -15,6 +15,7 @@ import CategoryAddNew from './module/category/CategoryAddNew';
 import UserManage from './drafts/UserManage';
 import UserAddNew from './drafts/UserAddNew';
 import UserProfile from './drafts/UserProfile';
+import CategoryUpdate from './module/category/CategoryUpdate';
 
 const App = () => {
 	return (
@@ -53,6 +54,10 @@ const App = () => {
 						<Route
 							path="/manage/add-category"
 							element={<CategoryAddNew></CategoryAddNew>}
+						></Route>
+						<Route
+							path="/manage/update-category"
+							element={<CategoryUpdate></CategoryUpdate>}
 						></Route>
 						<Route
 							path="/manage/user"

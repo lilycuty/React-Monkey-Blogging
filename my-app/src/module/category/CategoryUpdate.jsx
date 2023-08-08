@@ -1,58 +1,62 @@
-import { useForm } from 'react-hook-form';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import DashboardHeading from '../dashboard/DashboardHeading';
 import { Field, FieldCheckboxes } from '../../components/field';
 import { Label } from '../../components/label';
-import { Input } from '../../components/input';
 import { Radio } from '../../components/checkbox';
 import { Button } from '../../components/button';
-import slugify from 'slugify';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebase/firebase-config';
+import { Input } from '../../components/input';
+import { useForm } from 'react-hook-form';
 import { categoryStatus } from '../../utils/constants';
+import { useEffect } from 'react';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase/firebase-config';
+import slugify from 'slugify';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
-const CategoryAddNew = () => {
+const CategoryUpdate = () => {
+	const [params] = useSearchParams();
+	const categoryId = params.get('id');
 	const navigate = useNavigate();
 	const {
 		control,
 		handleSubmit,
 		watch,
-		formState: { isSubmitting, isValid },
-	} = useForm({
-		mode: 'onChange',
-		defaultValues: {
-			name: '',
-			slug: '',
-			status: 1,
-			createAt: new Date(),
-		},
-	});
+		reset,
+		formState: { isSubmitting },
+	} = useForm({ mode: 'onChange', defaultValues: {} });
+
 	const watchStatus = watch('status');
 
-	const handleAddNewCategory = async (values) => {
-		if (!isValid) return;
-		const cloneValues = { ...values };
-		cloneValues.slug = slugify(cloneValues.name || cloneValues.slug, {
-			lower: true,
+	useEffect(() => {
+		async function fetchData() {
+			//Get ra categoryId trong db categories
+			const colRef = doc(db, 'categories', categoryId);
+			const dataCategory = await getDoc(colRef);
+			//Hiển thị dữ liệu
+			reset(dataCategory.data());
+		}
+		fetchData();
+	}, [categoryId, reset]);
+
+	const handleUpdateCategory = async (values) => {
+		const colRef = doc(db, 'categories', categoryId);
+		await updateDoc(colRef, {
+			name: values.name,
+			slug: slugify(values.slug || values.name, { lower: true }),
+			status: Number(values.status),
 		});
-		cloneValues.status = Number(cloneValues.status);
-		const colRef = collection(db, 'categories');
-		await addDoc(colRef, {
-			...cloneValues,
-			createAt: serverTimestamp(),
-		});
-		toast.success('Add category successfully!');
+		toast.success('Update category successfully!');
 		navigate('/manage/category');
-		console.log('handleAddNewCategory ~ cloneValues', cloneValues);
+		console.log('handleUpdateCategory ~ values', values);
 	};
+	if (!categoryId) return null;
 	return (
 		<div>
 			<DashboardHeading
-				title="New category"
-				desc="Add new category"
+				title="Update category"
+				desc={`Update your category id: ${categoryId}`}
 			></DashboardHeading>
-			<form onSubmit={handleSubmit(handleAddNewCategory)}>
+			<form onSubmit={handleSubmit(handleUpdateCategory)}>
 				<div className="form-layout">
 					<Field>
 						<Label>Name</Label>
@@ -101,11 +105,11 @@ const CategoryAddNew = () => {
 					isLoading={isSubmitting}
 					disabled={isSubmitting}
 				>
-					Add new category
+					Update Category
 				</Button>
 			</form>
 		</div>
 	);
 };
 
-export default CategoryAddNew;
+export default CategoryUpdate;

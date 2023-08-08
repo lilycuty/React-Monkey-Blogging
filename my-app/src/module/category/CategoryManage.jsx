@@ -1,20 +1,44 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { useEffect, useState } from 'react';
 import { ActionDelete, ActionEdit, ActionView } from '../../components/action';
 import { Button } from '../../components/button';
 import { LabelStatus } from '../../components/label';
 import { Table } from '../../components/table';
 import DashboardHeading from '../dashboard/DashboardHeading';
-import { collection, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+import {
+	collection,
+	deleteDoc,
+	doc,
+	getDocs,
+	limit,
+	onSnapshot,
+	query,
+	startAfter,
+	where,
+} from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
 import { categoryStatus } from '../../utils/constants';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import debounce from 'lodash/debounce';
+
+const CATEGORY_PER_PAGE = 1;
 
 const CategoryManage = () => {
 	const [categoryList, setCategoryList] = useState([]);
+	const navigate = useNavigate();
+	const [filter, setFilter] = useState('');
+	const [lastDoc, setLastDoc] = useState();
+	const [total, setTotal] = useState(0);
 
-	useEffect(() => {
-		const colRef = collection(db, 'categories');
-		onSnapshot(colRef, (snapshot) => {
+	const handleLoadMoreCategory = async () => {
+		const nextRef = query(
+			collection(db, 'categories'),
+			startAfter(lastDoc),
+			limit(CATEGORY_PER_PAGE)
+		);
+
+		onSnapshot(nextRef, (snapshot) => {
 			let results = [];
 			snapshot.forEach((doc) => {
 				results.push({
@@ -22,9 +46,52 @@ const CategoryManage = () => {
 					...doc.data(),
 				});
 			});
-			setCategoryList(results);
+			setCategoryList([...categoryList, ...results]);
 		});
-	}, []);
+		const documentSnapshots = await getDocs(nextRef);
+		console.log('fetchData ~ documentSnapshots', documentSnapshots);
+
+		const lastVisible =
+			documentSnapshots.docs[documentSnapshots.docs.length - 1];
+		setLastDoc(lastVisible);
+	};
+
+	useEffect(() => {
+		async function fetchData() {
+			const colRef = collection(db, 'categories');
+			const newRef = filter
+				? query(
+						colRef,
+						where('name', '>=', filter),
+						where('name', '<=', filter + 'utf8')
+				  )
+				: query(colRef, limit(CATEGORY_PER_PAGE));
+
+			const documentSnapshots = await getDocs(newRef);
+			console.log('fetchData ~ documentSnapshots', documentSnapshots);
+
+			const lastVisible =
+				documentSnapshots.docs[documentSnapshots.docs.length - 1];
+
+			setLastDoc(lastVisible);
+
+			onSnapshot(colRef, (snapshot) => {
+				setTotal(snapshot.size);
+			});
+
+			onSnapshot(newRef, (snapshot) => {
+				let results = [];
+				snapshot.forEach((doc) => {
+					results.push({
+						id: doc.id,
+						...doc.data(),
+					});
+				});
+				setCategoryList(results);
+			});
+		}
+		fetchData();
+	}, [filter]);
 
 	const handleDeleteCategory = (docId) => {
 		const colRef = doc(db, 'categories', docId);
@@ -43,8 +110,11 @@ const CategoryManage = () => {
 			}
 		});
 	};
+	const handleInputFilter = debounce((e) => {
+		setFilter(e.target.value);
+	}, 500);
 
-	if (categoryList.length <= 0) return;
+	// if (categoryList.length <= 0) return;
 
 	return (
 		<div>
@@ -53,7 +123,14 @@ const CategoryManage = () => {
 					Create category
 				</Button>
 			</DashboardHeading>
-
+			<div className="mb-10 flex justify-end ">
+				<input
+					type="text"
+					placeholder="Search Category...."
+					className="p-4 border border-gray-400 rounded-lg"
+					onChange={handleInputFilter}
+				/>
+			</div>
 			<Table>
 				<thead>
 					<tr>
@@ -74,17 +151,21 @@ const CategoryManage = () => {
 									<span className="italic text-gray-400">{category.slug}</span>
 								</td>
 								<td>
-									{category.status === categoryStatus.APPROVED && (
+									{Number(category.status) === categoryStatus.APPROVED && (
 										<LabelStatus type="success">Approved</LabelStatus>
 									)}
-									{category.status === categoryStatus.UNAPPROVED && (
+									{Number(category.status) === categoryStatus.UNAPPROVED && (
 										<LabelStatus type="warning">Unapproved</LabelStatus>
 									)}
 								</td>
 								<td>
 									<div className="flex items-center gap-x-3">
 										<ActionView></ActionView>
-										<ActionEdit></ActionEdit>
+										<ActionEdit
+											onClick={() =>
+												navigate(`/manage/update-category?id=${category.id}`)
+											}
+										></ActionEdit>
 										<ActionDelete
 											onClick={() => handleDeleteCategory(category.id)}
 										></ActionDelete>
@@ -94,6 +175,13 @@ const CategoryManage = () => {
 						))}
 				</tbody>
 			</Table>
+			<div className="mt-10">
+				{total > categoryList.length && (
+					<Button onClick={handleLoadMoreCategory} className="mx-auto">
+						Load more
+					</Button>
+				)}
+			</div>
 		</div>
 	);
 };
