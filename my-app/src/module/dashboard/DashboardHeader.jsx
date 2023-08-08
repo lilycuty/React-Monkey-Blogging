@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { Button } from '../../components/button';
 
@@ -23,7 +22,7 @@ const DashboardHeaderStyles = styled.div`
 const DashboardHeader = () => {
 	return (
 		<DashboardHeaderStyles>
-			<Button to="/dashboard" height="52px" className="header-button">
+			<Button to="/manage/add-post" height="52px" className="header-button">
 				Write new post
 			</Button>
 			<div className="header-avatar">

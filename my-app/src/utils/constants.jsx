@@ -9,6 +9,7 @@ export const theme = {
 	gray6B: '#6b6b6b',
 	gray23: '#232323',
 	gray80: '#808191',
+	black: '#171725',
 };
 
 export const postStatus = {

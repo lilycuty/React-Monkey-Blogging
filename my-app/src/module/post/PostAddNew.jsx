@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Field } from '../../components/field';
+import { Field, FieldCheckboxes } from '../../components/field';
 import { Label } from '../../components/label';
 import { Input } from '../../components/input';
 import { useForm } from 'react-hook-form';
@@ -190,7 +190,7 @@ const PostAddNew = () => {
 					</Field>
 					<Field>
 						<Label>Status</Label>
-						<div className="flex items-center gap-x-5">
+						<FieldCheckboxes>
 							<Radio
 								name="status"
 								control={control}
@@ -217,7 +217,7 @@ const PostAddNew = () => {
 							>
 								Reject
 							</Radio>
-						</div>
+						</FieldCheckboxes>
 					</Field>
 				</div>
 

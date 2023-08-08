@@ -12,9 +12,13 @@ const DashboardLayoutStyles = styled.div`
 		&-heading {
 			font-weight: bold;
 			font-size: 36px;
-			margin-bottom: 40px;
-			color: ${(props) => props.theme.primary};
+			margin-bottom: 5px;
+			color: ${(props) => props.theme.black};
 			letter-spacing: 1px;
+		}
+		&-short-desc {
+			font-size: 14px;
+			color: ${(props) => props.theme.gray80};
 		}
 		&-main {
 			display: grid;

@@ -1,14 +1,14 @@
 import DashboardHeading from '../module/dashboard/DashboardHeading';
 
-const DashboardPage = () => {
+const UserManage = () => {
 	return (
 		<div>
 			<DashboardHeading
-				title="Dashboard"
-				desc="Overview dashboard monitor"
+				title="Users"
+				desc="Manage your user"
 			></DashboardHeading>
 		</div>
 	);
 };
 
-export default DashboardPage;
+export default UserManage;

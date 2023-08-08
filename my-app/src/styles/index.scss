@@ -4,7 +4,7 @@
 @import 'reset';
 @layer base {
 	body {
-		font-family: 'Montserrat', sans-serif;
+		font-family: 'Epilogue', sans-serif;
 		font-size: 16px;
 		line-height: 1.5;
 		color: #232323;
@@ -115,4 +115,8 @@
 	padding: 0;
 	position: absolute;
 	white-space: nowrap;
+}
+
+.form-layout {
+	@apply grid grid-cols-1 lg:grid-cols-2 lg:gap-x-10 mb-5 lg:mb-10;
 }

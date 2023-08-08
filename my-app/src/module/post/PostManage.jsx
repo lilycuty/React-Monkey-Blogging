@@ -1,16 +1,21 @@
-import React from 'react';
 import { Table } from '../../components/table';
 import { Pagination } from '../../components/pagination';
+import DashboardHeading from '../dashboard/DashboardHeading';
+
 const PostManage = () => {
 	return (
 		<div>
-			<h1 className="dashboard-heading">Manage Post</h1>
+			<DashboardHeading
+				title="All posts"
+				desc="Manage all posts"
+			></DashboardHeading>
 
-			<div className="mb-10 flex justify-end">
+			<div className="flex justify-end gap-5 mb-10">
 				<div className="w-full max-w-[300px]">
 					<input
 						type="text"
-						className="w-full p-4 rounded-lg border border-solid border-gray-300"
+						className="w-full p-4 border border-gray-300 border-solid rounded-lg"
+						placeholder="Search post..."
 					/>
 				</div>
 			</div>
