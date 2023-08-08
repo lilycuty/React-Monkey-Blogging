@@ -18,7 +18,7 @@
 - id
 - title
 - slug
-- status: 1(approved) 2(pendding)
+- status: 1(approved) 2(unapproved)
 - createdAt
 
 # User

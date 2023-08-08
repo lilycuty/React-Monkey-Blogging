@@ -1,5 +1,5 @@
-import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const TableStyles = styled.div`
 	overflow-x: auto;
@@ -34,4 +34,7 @@ const Table = ({ children }) => {
 	);
 };
 
+Table.propTypes = {
+	children: PropTypes.any,
+};
 export default Table;
