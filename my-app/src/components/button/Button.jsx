@@ -1,4 +1,3 @@
-import React from 'react';
 import styled, { css } from 'styled-components';
 import { LoadingSpinner } from '../loading';
 import PropTypes from 'prop-types';
@@ -52,7 +51,7 @@ const Button = ({
 	...props
 }) => {
 	const { isLoading, to } = props;
-	const child = !!isLoading ? <LoadingSpinner></LoadingSpinner> : children;
+	const child = isLoading ? <LoadingSpinner></LoadingSpinner> : children;
 
 	if (to !== '' && typeof to === 'string') {
 		return (
@@ -76,5 +75,6 @@ Button.propTypes = {
 	onClick: PropTypes.func,
 	children: PropTypes.node,
 	kind: PropTypes.oneOf(['primary', 'secondary']),
+	to: PropTypes.string,
 };
 export default Button;

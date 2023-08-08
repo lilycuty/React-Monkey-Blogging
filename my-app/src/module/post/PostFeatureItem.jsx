@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
+import slugify from 'slugify';
 
 const PostFeatureItemStyles = styled.div`
 	width: 100%;
@@ -79,6 +80,10 @@ const PostFeatureItem = ({ data }) => {
 	}, [data.userId]);
 
 	if (!data || !data.id) return null;
+	const date = data?.createAt?.seconds
+		? new Date(data.createAt.seconds * 1000)
+		: new Date();
+	const formatDate = new Date(date).toLocaleDateString('vi-VI');
 	return (
 		<PostFeatureItemStyles>
 			<PostImage
@@ -89,10 +94,18 @@ const PostFeatureItem = ({ data }) => {
 			<div className="post-overlay"></div>
 			<div className="post-content">
 				<div className="post-top">
-					{category?.name && <PostCategory>{category.name}</PostCategory>}
-					<PostMeta authorName={user?.fullname}></PostMeta>
+					{category?.name && (
+						<PostCategory to={category.slug}>{category.name}</PostCategory>
+					)}
+					<PostMeta
+						authorName={user?.fullname}
+						to={slugify(user?.fullname || '', { lower: true })}
+						date={formatDate}
+					></PostMeta>
 				</div>
-				<PostTitle size="big">{data.title}</PostTitle>
+				<PostTitle size="big" to={data.slug}>
+					{data.title}
+				</PostTitle>
 			</div>
 		</PostFeatureItemStyles>
 	);

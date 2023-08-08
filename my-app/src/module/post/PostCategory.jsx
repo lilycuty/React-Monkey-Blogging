@@ -1,6 +1,6 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import PropTypes from 'prop-types';
 
 const PostCategoryStyles = styled.div`
 	display: inline-block;
@@ -35,7 +35,12 @@ const PostCategory = ({
 		</PostCategoryStyles>
 	);
 };
-
+PostCategory.propTypes = {
+	children: PropTypes.node,
+	type: PropTypes.string,
+	className: PropTypes.string,
+	to: PropTypes.string,
+};
 export default PostCategory;
 
 /**

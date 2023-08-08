@@ -29,6 +29,7 @@ const PostAddNewStyles = styled.div``;
 const PostAddNew = () => {
 	const [categories, setCategories] = useState([]);
 	const [selectCategory, setSelectCategory] = useState({});
+	const [loading, setLoading] = useState(false);
 	const { userInfo } = useAuth();
 
 	const { control, watch, setValue, handleSubmit, getValues, reset } = useForm({
@@ -53,32 +54,39 @@ const PostAddNew = () => {
 	const watchHot = watch('hot');
 
 	const addPostHandler = async (values) => {
-		const cloneValues = { ...values };
-		cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {
-			lower: true,
-		});
-		cloneValues.status = Number(values.status);
-		const colRef = collection(db, 'posts');
-		await addDoc(colRef, {
-			...cloneValues,
-			image,
-			userId: userInfo.uid,
-			createAt: serverTimestamp,
-		});
-		toast.success('Create new post successfully');
+		setLoading(true);
+		try {
+			const cloneValues = { ...values };
+			cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {
+				lower: true,
+			});
+			cloneValues.status = Number(values.status);
+			const colRef = collection(db, 'posts');
+			await addDoc(colRef, {
+				...cloneValues,
+				image,
+				userId: userInfo.uid,
+				createAt: serverTimestamp(),
+			});
+			toast.success('Create new post successfully');
 
-		//Submit xong sẽ reset lại các trường
-		reset({
-			title: '',
-			slug: '',
-			status: 2,
-			categoryId: '',
-			hot: false,
-			image: '',
-		});
-		handleResetUpload();
-		setSelectCategory({});
-		console.log('addPostHandler ~ cloneValues', cloneValues);
+			//Submit xong sẽ reset lại các trường
+			reset({
+				title: '',
+				slug: '',
+				status: 2,
+				categoryId: '',
+				hot: false,
+				image: '',
+			});
+			handleResetUpload();
+			setSelectCategory({});
+			console.log('addPostHandler ~ cloneValues', cloneValues);
+		} catch (error) {
+			setLoading(false);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	useEffect(() => {
@@ -97,6 +105,10 @@ const PostAddNew = () => {
 			setCategories(results);
 		}
 		getData();
+	}, []);
+
+	useEffect(() => {
+		document.title = 'Monkey Blogging - Add new post';
 	}, []);
 
 	const handleClickSelect = (item) => {
@@ -209,7 +221,12 @@ const PostAddNew = () => {
 					</Field>
 				</div>
 
-				<Button type="submit" className="mx-auto">
+				<Button
+					type="submit"
+					className="mx-auto w-[250px]"
+					isLoading={loading}
+					disabled={loading}
+				>
 					Add new post
 				</Button>
 			</form>

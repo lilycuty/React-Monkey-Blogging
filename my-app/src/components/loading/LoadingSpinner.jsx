@@ -1,5 +1,5 @@
-import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const SpinnerStyles = styled.div`
 	width: ${(props) => props.size};
@@ -18,6 +18,11 @@ const SpinnerStyles = styled.div`
 `;
 const LoadingSpinner = ({ size = '40px', borderSize = '5px' }) => {
 	return <SpinnerStyles size={size} borderSize={borderSize}></SpinnerStyles>;
+};
+
+LoadingSpinner.propTypes = {
+	size: PropTypes.string,
+	borderSize: PropTypes.string,
 };
 
 export default LoadingSpinner;
