@@ -7,6 +7,7 @@ const TableStyles = styled.div`
 	border-radius: 10px;
 	table {
 		width: 100%;
+		white-space: nowrap;
 	}
 	thead {
 		background-color: #f7f7f8;

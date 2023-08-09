@@ -101,6 +101,7 @@ const PostFeatureItem = ({ data }) => {
 						authorName={user?.fullname}
 						to={slugify(user?.fullname || '', { lower: true })}
 						date={formatDate}
+						className="ml-auto"
 					></PostMeta>
 				</div>
 				<PostTitle size="big" to={data.slug}>

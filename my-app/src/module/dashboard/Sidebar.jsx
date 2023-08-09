@@ -1,5 +1,7 @@
+import { signOut } from 'firebase/auth';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import { auth } from '../../firebase/firebase-config';
 const sidebarLink = [
 	{
 		title: 'Dashboard',
@@ -100,7 +102,9 @@ const sidebarLink = [
 				/>
 			</svg>
 		),
-		onClick: () => {},
+		onClick: () => {
+			signOut(auth);
+		},
 	},
 ];
 const SidebarStyles = styled.div`
@@ -142,12 +146,22 @@ const Sidebar = () => {
 				<img srcSet="/logo.png 2x" alt="monkey-blogging" />
 				<span>Monkey Blogging</span>
 			</div>
-			{sidebarLink.map((link) => (
-				<NavLink to={link.url} className="menu-item" key={link.title}>
-					<span className="menu-icon">{link.icon}</span>
-					<span className="menu-text">{link.title}</span>
-				</NavLink>
-			))}
+			{sidebarLink.map((link) => {
+				if (link.onClick) {
+					return (
+						<div className="menu-item" key={link.title} onClick={link.onClick}>
+							<span className="menu-icon">{link.icon}</span>
+							<span className="menu-text">{link.title}</span>
+						</div>
+					);
+				}
+				return (
+					<NavLink to={link.url} className="menu-item" key={link.title}>
+						<span className="menu-icon">{link.icon}</span>
+						<span className="menu-text">{link.title}</span>
+					</NavLink>
+				);
+			})}
 		</SidebarStyles>
 	);
 };

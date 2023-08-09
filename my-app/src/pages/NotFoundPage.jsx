@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom';
+/* eslint-disable react/no-unescaped-entities */
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const NotFoundPageStyles = styled.div`
@@ -7,6 +8,21 @@ const NotFoundPageStyles = styled.div`
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
+	background-color: ${(props) => props.theme.black};
+	color: white;
+	.page-content {
+		max-width: 1000px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	.image {
+		max-width: 250px;
+		margin: 0 auto 40px;
+	}
+	.description {
+		max-width: 800px;
+		margin: 0 auto 40px;
+	}
 	.logo {
 		display: inline-block;
 		margin-bottom: 40px;
@@ -20,21 +36,31 @@ const NotFoundPageStyles = styled.div`
 		display: inline-block;
 		padding: 15px 30px;
 		color: white;
-		background-color: ${(props) => props.theme.primary};
+		background-image: linear-gradient(
+			to right top,
+			${(props) => props.theme.primary},
+			${(props) => props.theme.secondary}
+		);
 		border-radius: 8px;
 		font-weight: 500;
 	}
 `;
 const NotFoundPage = () => {
+	const navigate = useNavigate();
 	return (
 		<NotFoundPageStyles>
-			<NavLink to="/" className={'logo'}>
-				<img srcSet="/logo.png 2x" alt="monkey-blogging" />
-			</NavLink>
-			<h1 className="heading">Oops! Page Not Found</h1>
-			<NavLink to="/" className={'back'}>
-				Back to home
-			</NavLink>
+			<div className="page-content">
+				<img src="/404.png" alt="notfound" className="image" />
+				<h1 className="heading">404 - Looks like you're lost.</h1>
+				<p className="description">
+					Maybe this page used to exist or you just spelled something wrong.
+					Chances are your spelled something wrong, so can you double check the
+					URL?
+				</p>
+				<button onClick={() => navigate('/')} className="back">
+					Go back
+				</button>
+			</div>
 		</NotFoundPageStyles>
 	);
 };

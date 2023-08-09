@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '../firebase/firebase-config';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import AuthenticationPage from './AuthenticationPage';
 import slugify from 'slugify';
 
@@ -51,22 +51,25 @@ const SignUpPage = () => {
 
 		await updateProfile(auth.currentUser, {
 			displayName: values.fullname,
+			photoURL:
+				'https://cdnimg.vietnamplus.vn/uploaded/mzdic/2022_12_21/messihieusuatghiban1.jpg',
 		});
 
-		// const userRef = collection(db, 'users');
 		await setDoc(doc(db, 'users', auth.currentUser.uid), {
 			email: values.email,
 			password: values.password,
-			id: cred.user.uid,
 			fullname: values.fullname,
-			username: slugify(values.fullname, { lower: true }),
+			username: slugify(values.fullname, {
+				lower: true,
+				trim: true,
+				replacement: ' ',
+			}),
+			avatar:
+				'https://cdnimg.vietnamplus.vn/uploaded/mzdic/2022_12_21/messihieusuatghiban1.jpg',
+			status: 1,
+			role: 3,
+			createdAt: serverTimestamp(),
 		});
-		// await addDoc(userRef, {
-		// 	email: values.email,
-		// 	password: values.password,
-		// 	id: cred.user.uid,
-		// 	fullname: values.fullname,
-		// });
 
 		toast.success('Register successfully');
 

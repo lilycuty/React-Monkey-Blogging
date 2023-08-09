@@ -32,6 +32,7 @@ const CategoryManage = () => {
 	const [total, setTotal] = useState(0);
 
 	const handleLoadMoreCategory = async () => {
+		//lúc này startAfter sẽ lấy ra thằng đằng sau thằng hiện tại
 		const nextRef = query(
 			collection(db, 'categories'),
 			startAfter(lastDoc),
@@ -46,11 +47,11 @@ const CategoryManage = () => {
 					...doc.data(),
 				});
 			});
+			console.log(results);
 			setCategoryList([...categoryList, ...results]);
 		});
-		const documentSnapshots = await getDocs(nextRef);
-		console.log('fetchData ~ documentSnapshots', documentSnapshots);
 
+		const documentSnapshots = await getDocs(nextRef);
 		const lastVisible =
 			documentSnapshots.docs[documentSnapshots.docs.length - 1];
 		setLastDoc(lastVisible);
@@ -67,12 +68,10 @@ const CategoryManage = () => {
 				  )
 				: query(colRef, limit(CATEGORY_PER_PAGE));
 
+			//Khi component chạy -> set thằng đầu tiên trong db categories vào state lastDoc
 			const documentSnapshots = await getDocs(newRef);
-			console.log('fetchData ~ documentSnapshots', documentSnapshots);
-
 			const lastVisible =
 				documentSnapshots.docs[documentSnapshots.docs.length - 1];
-
 			setLastDoc(lastVisible);
 
 			onSnapshot(colRef, (snapshot) => {

@@ -24,9 +24,10 @@
 # User
 
 - id
-- displayName
+- displayName(fullname)
 - email
 - password
+- username
 - avatar
 - status: 1(active) 2(pendding) 3(ban)
 - role: 1(Admin) 2(Mod) 3(User)

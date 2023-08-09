@@ -12,10 +12,11 @@ import PostAddNew from './module/post/PostAddNew';
 import PostUpdate from './module/post/PostUpdate';
 import CategoryManage from './module/category/CategoryManage';
 import CategoryAddNew from './module/category/CategoryAddNew';
-import UserManage from './drafts/UserManage';
-import UserAddNew from './drafts/UserAddNew';
-import UserProfile from './drafts/UserProfile';
 import CategoryUpdate from './module/category/CategoryUpdate';
+import UserManage from './module/user/UserManage';
+import UserProfile from './module/user/UserProfile';
+import UserAddNew from './module/user/UserAddNew';
+import UserUpdate from './module/user/UserUpdate';
 
 const App = () => {
 	return (
@@ -66,6 +67,10 @@ const App = () => {
 						<Route
 							path="/manage/add-user"
 							element={<UserAddNew></UserAddNew>}
+						></Route>
+						<Route
+							path="/manage/update-user"
+							element={<UserUpdate></UserUpdate>}
 						></Route>
 						<Route
 							path="/profile"

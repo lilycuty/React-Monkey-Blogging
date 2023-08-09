@@ -65,6 +65,7 @@ const getLastName = (name) => {
 
 const Header = () => {
 	const { userInfo } = useAuth();
+	console.log('Header ~ userInfo', userInfo);
 	return (
 		<HeaderStyles>
 			<div className="container">
