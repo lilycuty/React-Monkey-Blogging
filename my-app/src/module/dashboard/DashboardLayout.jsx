@@ -31,7 +31,6 @@ const DashboardLayoutStyles = styled.div`
 const DashboardLayout = () => {
 	//Chưa đăng nhập thì không vào được trang Dashboard
 	const { userInfo } = useAuth();
-	console.log('DashboardLayout ~ userInfo', userInfo);
 	if (!userInfo) return <NotFoundPage></NotFoundPage>;
 
 	return (

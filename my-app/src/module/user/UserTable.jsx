@@ -101,7 +101,10 @@ const UserTable = () => {
 										<div className="flex items-start flex-col justify-center">
 											<h3>{user?.fullname}</h3>
 											<time className="text-sm text-gray-500">
-												{new Date().toLocaleDateString()}
+												{new Date(
+													user.createdAt.seconds * 1000
+												).toLocaleDateString('vi-VI') ||
+													new Date().toLocaleDateString('vi-VI')}
 											</time>
 										</div>
 									</div>

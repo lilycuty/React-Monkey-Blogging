@@ -9,7 +9,7 @@ import ImageUpload from '../../components/image/ImageUpload';
 import { userRole, userStatus } from '../../utils/constants';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '../../firebase/firebase-config';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import slugify from 'slugify';
 import { toast } from 'react-toastify';
 import useFirebaseImage from '../../hooks/useFirebaseImage';
@@ -27,6 +27,17 @@ const UserAddNew = () => {
 		formState: { isValid, isSubmitting },
 	} = useForm({
 		mode: 'onChange',
+		defaultValues: {
+			email: '',
+			password: '',
+			id: '',
+			fullname: '',
+			username: '',
+			avatar: '',
+			status: userStatus.ACTIVE,
+			role: userRole.USER,
+			createdAt: new Date(),
+		},
 	});
 	const {
 		progress,
@@ -42,14 +53,18 @@ const UserAddNew = () => {
 	const handleCreateUser = async (values) => {
 		try {
 			if (!isValid) return;
-			await createUserWithEmailAndPassword(auth, values.email, values.password);
+			const cred = await createUserWithEmailAndPassword(
+				auth,
+				values.email,
+				values.password
+			);
 
 			await updateProfile(auth.currentUser, {
 				displayName: values.fullname,
 				photoURL: image,
 			});
 
-			await addDoc(collection(db, 'users'), {
+			await setDoc(doc(db, 'users', cred.user.uid), {
 				email: values.email,
 				password: values.password,
 				fullname: values.fullname,
@@ -62,6 +77,7 @@ const UserAddNew = () => {
 				status: Number(values.status),
 				role: Number(values.role),
 				createdAt: serverTimestamp(),
+				id: cred.user.uid,
 			});
 			console.log('handleCreateUser ~ values', values);
 

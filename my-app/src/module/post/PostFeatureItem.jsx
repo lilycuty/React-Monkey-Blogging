@@ -4,9 +4,6 @@ import PostTitle from './PostTitle';
 import PostMeta from './PostMeta';
 import PostImage from './PostImage';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase/firebase-config';
 import slugify from 'slugify';
 
 const PostFeatureItemStyles = styled.div`
@@ -54,36 +51,14 @@ const PostFeatureItemStyles = styled.div`
 `;
 
 const PostFeatureItem = ({ data }) => {
-	const [category, setCategory] = useState('');
-	const [user, setUser] = useState('');
-
-	useEffect(() => {
-		async function fetch() {
-			const docRef = doc(db, 'categories', data.categoryId);
-			const docSnap = await getDoc(docRef);
-			setCategory(docSnap.data());
-		}
-		fetch();
-	}, [data.categoryId]);
-
-	useEffect(() => {
-		async function fetchUser() {
-			if (data.userId) {
-				const docRef = doc(db, 'users', data.userId);
-				const docSnap = await getDoc(docRef);
-				if (docSnap.data) {
-					setUser(docSnap.data());
-				}
-			}
-		}
-		fetchUser();
-	}, [data.userId]);
-
 	if (!data || !data.id) return null;
+
 	const date = data?.createAt?.seconds
 		? new Date(data.createAt.seconds * 1000)
 		: new Date();
 	const formatDate = new Date(date).toLocaleDateString('vi-VI');
+
+	const { category, user } = data;
 	return (
 		<PostFeatureItemStyles>
 			<PostImage

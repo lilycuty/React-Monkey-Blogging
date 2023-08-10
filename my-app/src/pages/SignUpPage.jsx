@@ -48,6 +48,7 @@ const SignUpPage = () => {
 			values.password
 		);
 		console.log('handleSignUp ~ cred', cred);
+		console.log(auth.currentUser.uid);
 
 		await updateProfile(auth.currentUser, {
 			displayName: values.fullname,
@@ -69,6 +70,7 @@ const SignUpPage = () => {
 			status: 1,
 			role: 3,
 			createdAt: serverTimestamp(),
+			id: cred.user.uid,
 		});
 
 		toast.success('Register successfully');

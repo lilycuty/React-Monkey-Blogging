@@ -14,6 +14,8 @@ import { useEffect, useState } from 'react';
 import {
 	addDoc,
 	collection,
+	doc,
+	getDoc,
 	getDocs,
 	query,
 	serverTimestamp,
@@ -40,6 +42,8 @@ const PostAddNew = () => {
 			status: 2,
 			hot: false,
 			image: '',
+			category: {},
+			user: {},
 		},
 	});
 	const {
@@ -53,6 +57,19 @@ const PostAddNew = () => {
 	const watchStatus = watch('status');
 	const watchHot = watch('hot');
 
+	useEffect(() => {
+		async function fetchUserData() {
+			if (!userInfo.uid) return;
+			const conRef = doc(db, 'users', userInfo.uid);
+			const docData = await getDoc(conRef);
+			setValue('user', {
+				id: docData.id,
+				...docData.data(),
+			});
+		}
+		fetchUserData();
+	}, [userInfo.uid, setValue]);
+
 	const addPostHandler = async (values) => {
 		setLoading(true);
 		try {
@@ -65,7 +82,6 @@ const PostAddNew = () => {
 			await addDoc(colRef, {
 				...cloneValues,
 				image,
-				userId: userInfo.uid,
 				createAt: serverTimestamp(),
 			});
 			toast.success('Create new post successfully');
@@ -75,9 +91,10 @@ const PostAddNew = () => {
 				title: '',
 				slug: '',
 				status: 2,
-				categoryId: '',
 				hot: false,
 				image: '',
+				category: {},
+				user: {},
 			});
 			handleResetUpload();
 			setSelectCategory({});
@@ -111,11 +128,15 @@ const PostAddNew = () => {
 		document.title = 'Monkey Blogging - Add new post';
 	}, []);
 
-	const handleClickSelect = (item) => {
-		setValue('categoryId', item.id);
+	const handleClickSelect = async (item) => {
+		const conRef = doc(db, 'categories', item.id);
+		const docData = await getDoc(conRef);
+		setValue('category', {
+			id: docData.id,
+			...docData.data(),
+		});
 		setSelectCategory(item);
 	};
-
 	return (
 		<PostAddNewStyles>
 			<h1 className="dashboard-heading">Add new post</h1>

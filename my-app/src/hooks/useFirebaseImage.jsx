@@ -7,7 +7,12 @@ import {
 } from 'firebase/storage';
 import { useState } from 'react';
 
-export default function useFirebaseImage(setValue, getValues) {
+export default function useFirebaseImage(
+	setValue,
+	getValues,
+	imageName = null,
+	callback = null
+) {
 	const [progress, setProgress] = useState(0);
 	const [image, setImage] = useState('');
 
@@ -58,12 +63,16 @@ export default function useFirebaseImage(setValue, getValues) {
 
 	const handleDeleteImage = () => {
 		const storage = getStorage();
-		const imageRef = ref(storage, 'images/' + getValues('image_name'));
+		const imageRef = ref(
+			storage,
+			'images/' + (imageName || getValues('image_name'))
+		);
 		deleteObject(imageRef)
 			.then(() => {
 				console.log('Remove image successfully');
 				setImage('');
 				setProgress(0);
+				callback && callback();
 			})
 			.catch((error) => {
 				console.log('Can not delete image', error);
@@ -78,6 +87,7 @@ export default function useFirebaseImage(setValue, getValues) {
 	return {
 		progress,
 		image,
+		setImage,
 		handleUploadImage,
 		handleSelectImage,
 		handleDeleteImage,

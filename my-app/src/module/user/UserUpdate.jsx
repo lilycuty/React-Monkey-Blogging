@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { Radio } from '../../components/checkbox';
 import { Label } from '../../components/label';
-import { Input } from '../../components/input';
+import { Input, InputPasswordToggle } from '../../components/input';
 import { Button } from '../../components/button';
 import DashboardHeading from '../dashboard/DashboardHeading';
 import { Field, FieldCheckboxes } from '../../components/field';
@@ -18,7 +18,6 @@ import slugify from 'slugify';
 
 const UserUpdate = () => {
 	const [params] = useSearchParams();
-	console.log('UserUpdate ~ params', params.get('id'));
 	const userId = params.get('id');
 	// const nagivate = useNavigate();
 
@@ -34,25 +33,40 @@ const UserUpdate = () => {
 		mode: 'onChange',
 		defaultValues: {},
 	});
-	const { progress, handleDeleteImage, handleSelectImage } = useFirebaseImage(
-		setValue,
-		getValues
-	);
+
+	const watchStatus = watch('status');
+	const watchRole = watch('role');
+	const imageUrl = getValues('avatar');
+	console.log('UserUpdate ~ imageUrl', imageUrl);
+
+	//Dùng regex get ra tên file của ảnh trong filebase
+	const imageRegex = /%2F(\S+)\?/gm.exec(imageUrl);
+	const imageName = imageRegex?.length > 0 ? imageRegex[1] : '';
+
+	const { progress, image, handleDeleteImage, handleSelectImage, setImage } =
+		useFirebaseImage(setValue, getValues, imageName, deleteAvatar);
+
+	//Sử dụng function declaration để có hoisting
+	async function deleteAvatar() {
+		const colRef = doc(db, 'users', userId);
+		await updateDoc(colRef, {
+			avatar: '',
+		});
+	}
 
 	useEffect(() => {
 		async function fetchData() {
 			if (!userId) return;
 			const colRef = doc(db, 'users', userId);
 			const dataUser = await getDoc(colRef);
-			console.log('fetchData ~ dataUser', dataUser.data());
 			reset(dataUser && dataUser.data());
 		}
 		fetchData();
 	}, [userId, reset]);
 
-	const watchStatus = watch('status');
-	const watchRole = watch('role');
-	const imageUrl = getValues('avatar');
+	useEffect(() => {
+		setImage(imageUrl);
+	}, [imageUrl, setImage]);
 
 	const handleUpdateUser = async (values) => {
 		try {
@@ -66,7 +80,7 @@ const UserUpdate = () => {
 					trim: true,
 					replacement: ' ',
 				}),
-				// avatar: image,
+				avatar: image,
 				status: Number(values.status),
 				role: Number(values.role),
 			});
@@ -88,7 +102,7 @@ const UserUpdate = () => {
 			<div className="w-[200px] h-[200px] mx-auto rounded-full mb-10">
 				<ImageUpload
 					className="!rounded-full h-full"
-					image={imageUrl}
+					image={image}
 					onChange={handleSelectImage}
 					progress={progress}
 					handleDeleteImage={handleDeleteImage}
@@ -126,12 +140,12 @@ const UserUpdate = () => {
 					</Field>
 					<Field>
 						<Label>Password</Label>
-						<Input
+						<InputPasswordToggle
 							name="password"
 							placeholder="Enter your password"
 							control={control}
 							type="password"
-						></Input>
+						></InputPasswordToggle>
 					</Field>
 				</div>
 

@@ -92,7 +92,7 @@ const CategoryManage = () => {
 		fetchData();
 	}, [filter]);
 
-	const handleDeleteCategory = (docId) => {
+	const handleDeleteCategory = async (docId) => {
 		const colRef = doc(db, 'categories', docId);
 		Swal.fire({
 			title: 'Are you sure?',
