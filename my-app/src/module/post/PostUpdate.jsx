@@ -9,7 +9,7 @@ import Toggle from '../../components/toggle/Toggle';
 import { Radio } from '../../components/checkbox';
 import { Button } from '../../components/button';
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
 	collection,
 	doc,
@@ -20,16 +20,23 @@ import {
 	where,
 } from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
-import { postStatus } from '../../utils/constants';
+import { API_KEY_IMGBB, postStatus } from '../../utils/constants';
 import useFirebaseImage from '../../hooks/useFirebaseImage';
 import slugify from 'slugify';
+import { toast } from 'react-toastify';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import ImageUploader from 'quill-image-uploader';
+import axios from 'axios';
+Quill.register('modules/imageUploader', ImageUploader);
 
 const PostUpdate = () => {
-	const [categories, setCategories] = useState([]);
-	const [selectCategory, setSelectCategory] = useState({});
-
 	const [params] = useSearchParams();
 	const postID = params.get('id');
+
+	const [categories, setCategories] = useState([]);
+	const [selectCategory, setSelectCategory] = useState({});
+	const [content, setContent] = useState('');
 
 	const { control, reset, handleSubmit, setValue, getValues, watch } = useForm({
 		mode: 'onChange',
@@ -38,23 +45,23 @@ const PostUpdate = () => {
 	const watchHot = watch('hot');
 	const watchStatus = watch('status');
 	const postImage = getValues('image');
+	const imageName = getValues('image_name');
 	const selectCategoryPost = getValues('category');
-	const imagePostName = getValues('image_name');
 
 	const { progress, setImage, image, handleDeleteImage, handleSelectImage } =
-		useFirebaseImage(setValue, getValues, imagePostName, deleteImagePost);
-	console.log('PostUpdate ~ image', image);
+		useFirebaseImage(setValue, getValues, imageName, deleteImagePost);
 
 	useEffect(() => {
 		async function fetchDataPost() {
 			try {
+				if (!postID) return;
 				const colRef = doc(db, 'posts', postID);
 				const dataPost = await getDoc(colRef);
-				console.log('fetchDataPost ~ dataPost', dataPost.data());
-				reset({
-					...dataPost.data(),
-				});
-				setSelectCategory({ ...dataPost.data() });
+				if (dataPost.data()) {
+					reset(dataPost && dataPost.data());
+					setSelectCategory(dataPost.data() || '');
+					setContent(dataPost.data()?.content || '');
+				}
 			} catch (error) {
 				console.log('useEffect ~ error', error);
 			}
@@ -72,12 +79,12 @@ const PostUpdate = () => {
 	}
 
 	useEffect(() => {
-		setSelectCategory(selectCategoryPost);
-	}, [setSelectCategory, selectCategoryPost]);
-
-	useEffect(() => {
 		setImage(postImage);
 	}, [setImage, postImage]);
+
+	useEffect(() => {
+		setSelectCategory(selectCategoryPost);
+	}, [setSelectCategory, selectCategoryPost]);
 
 	useEffect(() => {
 		async function getData() {
@@ -107,21 +114,57 @@ const PostUpdate = () => {
 		setSelectCategory(item);
 	};
 
+	//Handle Update Post
 	const updatePostHandler = async (values) => {
 		try {
 			const colRef = doc(db, 'posts', postID);
 			values.slug = slugify(values.slug || values.title, {
 				lower: true,
 			});
+			values.status = Number(values.status);
 			await updateDoc(colRef, {
 				...values,
+				image: image,
+				content,
 			});
+			toast.success('Update post successfully!');
 			console.log('updatePostHandler ~ values', values);
 		} catch (error) {
 			console.log('updatePostHandler ~ error', error);
 		}
 	};
-	if (!postID) return;
+	const modules = useMemo(
+		() => ({
+			toolbar: [
+				['bold', 'italic', 'underline', 'strike'],
+				['blockquote'],
+				[{ header: 1 }, { header: 2 }], // custom button values
+				[{ list: 'ordered' }, { list: 'bullet' }],
+				[{ header: [1, 2, 3, 4, 5, 6, false] }],
+				['link', 'image'],
+			],
+			imageUploader: {
+				upload: async (file) => {
+					//Sử dụng cho việc hiển thị hình ảnh
+					const bodyFormData = new FormData();
+					bodyFormData.append('image', file);
+					const response = await axios({
+						method: 'post',
+						url: `https://api.imgbb.com/1/upload?key=${API_KEY_IMGBB}`,
+						data: bodyFormData,
+						headers: {
+							'Content-Type': 'multipart/form-data',
+						},
+					});
+					return response.data.data.url;
+				},
+			},
+		}),
+
+		[]
+	);
+
+	if (!postID) return null;
 	return (
 		<>
 			<DashboardHeading
@@ -181,6 +224,20 @@ const PostUpdate = () => {
 								{selectCategory?.name}
 							</span>
 						)}
+					</Field>
+				</div>
+
+				<div className="mb-10">
+					<Field>
+						<Label>Content</Label>
+						<div className="w-full entry-content">
+							<ReactQuill
+								modules={modules}
+								theme="snow"
+								value={content}
+								onChange={setContent}
+							/>
+						</div>
 					</Field>
 				</div>
 

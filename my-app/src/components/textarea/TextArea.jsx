@@ -2,34 +2,29 @@ import { useController } from 'react-hook-form';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const InputStyles = styled.div`
+const TextAreaStyles = styled.div`
 	position: relative;
 	width: 100%;
-	input {
+	textarea {
 		width: 100%;
-		padding: ${(props) => (props.hasIcon ? '20px 60px 20px 20px' : '20px')};
+		padding: 20px;
 		background-color: ${(props) => props.theme.grayLight};
 		border-radius: 8px;
 		font-weight: 500;
 		transition: all 0.2s linear;
 		border: 1px solid transparent;
+		resize: none;
+		min-height: 150px;
 	}
-	input:focus {
+	textarea:focus {
 		background-color: white;
 		border-color: ${(props) => props.theme.primary};
 	}
-	input::-webkit-input-placeholder {
+	textarea::-webkit-input-placeholder {
 		color: #84878b;
 	}
-	input::-moz-input-placeholder {
+	textarea::-moz-input-placeholder {
 		color: #84878b;
-	}
-	.input-icon {
-		position: absolute;
-		right: 20px;
-		top: 50%;
-		transform: translateY(-50%);
-		cursor: pointer;
 	}
 `;
 
@@ -38,10 +33,10 @@ const InputStyles = styled.div`
  * @param {*} placeholder(optional) - Placeholder of input
  * @param {*} name(optional) - name of input
  * @param {*} control(optional) - control from react hook form
- * @returns Input
+ * @returns TextArea
  */
 
-const Input = ({ name = '', type = 'text', children, control, ...props }) => {
+const TextArea = ({ name = '', type = 'text', control, ...props }) => {
 	const { field } = useController({
 		control,
 		name,
@@ -49,16 +44,21 @@ const Input = ({ name = '', type = 'text', children, control, ...props }) => {
 	});
 
 	return (
-		<InputStyles hasIcon={children ? true : false}>
-			<input id={name} type={type} {...field} {...props} autoComplete="off" />
-			{children ? <div className="input-icon">{children}</div> : null}
-		</InputStyles>
+		<TextAreaStyles>
+			<textarea
+				id={name}
+				type={type}
+				{...field}
+				{...props}
+				autoComplete="off"
+			></textarea>
+		</TextAreaStyles>
 	);
 };
-Input.propTypes = {
+TextArea.propTypes = {
 	name: PropTypes.string,
 	type: PropTypes.string,
 	children: PropTypes.node,
 	control: PropTypes.any,
 };
-export default Input;
+export default TextArea;

@@ -34,3 +34,4 @@ export const userRole = {
 	MODERATOR: 2,
 	USER: 3,
 };
+export const API_KEY_IMGBB = '62bd7c3c4a5962ef0d086bf34cf54e3e';

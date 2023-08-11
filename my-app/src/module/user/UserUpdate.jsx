@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
 import slugify from 'slugify';
+import { TextArea } from '../../components/textarea';
 // import { useNavigate } from 'react-router-dom';
 
 const UserUpdate = () => {
@@ -83,6 +84,7 @@ const UserUpdate = () => {
 				avatar: image,
 				status: Number(values.status),
 				role: Number(values.role),
+				description: values.description,
 			});
 			toast.success('Update user successfully!');
 		} catch (error) {
@@ -207,6 +209,13 @@ const UserUpdate = () => {
 								User
 							</Radio>
 						</FieldCheckboxes>
+					</Field>
+				</div>
+
+				<div className="form-layout">
+					<Field>
+						<Label htmlFor="description">Description</Label>
+						<TextArea name="description" control={control}></TextArea>
 					</Field>
 				</div>
 
