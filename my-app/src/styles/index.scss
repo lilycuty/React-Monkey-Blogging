@@ -83,3 +83,22 @@
 		z-index: 10;
 	}
 }
+.three-dot {
+	display: -webkit-box !important;
+	overflow: hidden;
+	max-width: 100px;
+	text-overflow: ellipsis;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical;
+	&-name {
+		max-width: 110px;
+	}
+	&-title {
+		width: 100%;
+		display: -webkit-box !important;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+}

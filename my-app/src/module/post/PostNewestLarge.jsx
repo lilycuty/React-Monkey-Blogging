@@ -1,9 +1,10 @@
-import React from 'react';
 import styled from 'styled-components';
 import PostCategory from './PostCategory';
 import PostTitle from './PostTitle';
 import PostMeta from './PostMeta';
 import PostImage from './PostImage';
+import slugify from 'slugify';
+import PropTypes from 'prop-types';
 
 const PostNewestLargeStyles = styled.div`
 	.post {
@@ -21,21 +22,35 @@ const PostNewestLargeStyles = styled.div`
 		}
 	}
 `;
-const PostNewestLarge = () => {
+const PostNewestLarge = ({ data }) => {
+	const date = data?.createAt?.seconds
+		? new Date(data.createAt.seconds * 1000)
+		: new Date();
+	const formatDate = new Date(date).toLocaleDateString('vi-VI');
+	if (!data) return null;
 	return (
 		<PostNewestLargeStyles>
 			<PostImage
 				className="post-image"
-				url="https://images.unsplash.com/photo-1510519138101-570d1dca3d66?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2294&q=80"
-				alt="Unsplash"
+				url={data?.image}
+				alt={data?.title}
+				to={data?.slug}
 			></PostImage>
-			<PostCategory>Kiến thức</PostCategory>
-			<PostTitle size="big">
-				Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
+			<PostCategory to={data?.category?.slug}>
+				{data?.category?.name}
+			</PostCategory>
+			<PostTitle size="big" to={data.slug}>
+				{data?.title}
 			</PostTitle>
-			<PostMeta></PostMeta>
+			<PostMeta
+				authorName={data?.user?.fullname}
+				to={slugify(data?.user?.username || '', { lower: true })}
+				date={formatDate}
+			></PostMeta>
 		</PostNewestLargeStyles>
 	);
 };
-
+PostNewestLarge.propTypes = {
+	data: PropTypes.any,
+};
 export default PostNewestLarge;

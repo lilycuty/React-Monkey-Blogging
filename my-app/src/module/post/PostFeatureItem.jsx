@@ -70,11 +70,13 @@ const PostFeatureItem = ({ data }) => {
 			<div className="post-content">
 				<div className="post-top">
 					{category?.name && (
-						<PostCategory to={category.slug}>{category.name}</PostCategory>
+						<PostCategory to={category.slug} className="three-dot">
+							{category.name}
+						</PostCategory>
 					)}
 					<PostMeta
 						authorName={user?.fullname}
-						to={slugify(user?.fullname || '', { lower: true })}
+						to={slugify(user?.username || '', { lower: true })}
 						date={formatDate}
 						className="ml-auto"
 					></PostMeta>

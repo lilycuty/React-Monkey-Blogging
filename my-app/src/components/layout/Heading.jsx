@@ -1,5 +1,5 @@
-import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const HeadingStyles = styled.h2`
 	color: ${(props) => props.theme.tertiary};
@@ -29,5 +29,8 @@ const HeadingStyles = styled.h2`
 const Heading = ({ className = '', children }) => {
 	return <HeadingStyles className={className}>{children}</HeadingStyles>;
 };
-
+Heading.propTypes = {
+	className: PropTypes.string,
+	children: PropTypes.node,
+};
 export default Heading;

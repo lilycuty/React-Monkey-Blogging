@@ -6,11 +6,11 @@ import { useForm } from 'react-hook-form';
 import { Button } from '../../components/button';
 import { Radio } from '../../components/checkbox';
 import slugify from 'slugify';
-import { postStatus } from '../../utils/constants';
+import { API_KEY_IMGBB, postStatus } from '../../utils/constants';
 import ImageUpload from '../../components/image/ImageUpload';
 import useFirebaseImage from '../../hooks/useFirebaseImage';
 import Toggle from '../../components/toggle/Toggle';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
 	addDoc,
 	collection,
@@ -25,6 +25,11 @@ import { db } from '../../firebase/firebase-config';
 import { Dropdown } from '../../components/dropdown';
 import { useAuth } from '../../contexts/auth-context';
 import { toast } from 'react-toastify';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import ImageUploader from 'quill-image-uploader';
+import axios from 'axios';
+Quill.register('modules/imageUploader', ImageUploader);
 
 const PostAddNewStyles = styled.div``;
 
@@ -32,6 +37,7 @@ const PostAddNew = () => {
 	const [categories, setCategories] = useState([]);
 	const [selectCategory, setSelectCategory] = useState({});
 	const [loading, setLoading] = useState(false);
+	const [content, setContent] = useState('');
 	const { userInfo } = useAuth();
 
 	const { control, watch, setValue, handleSubmit, getValues, reset } = useForm({
@@ -42,6 +48,7 @@ const PostAddNew = () => {
 			status: 2,
 			hot: false,
 			image: '',
+			content: '',
 			category: {},
 			user: {},
 		},
@@ -82,6 +89,7 @@ const PostAddNew = () => {
 			await addDoc(colRef, {
 				...cloneValues,
 				image,
+				content,
 				createAt: serverTimestamp(),
 			});
 			toast.success('Create new post successfully');
@@ -93,6 +101,7 @@ const PostAddNew = () => {
 				status: 2,
 				hot: false,
 				image: '',
+				// content: '',
 				category: {},
 				user: {},
 			});
@@ -137,6 +146,37 @@ const PostAddNew = () => {
 		});
 		setSelectCategory(item);
 	};
+
+	const modules = useMemo(
+		() => ({
+			toolbar: [
+				['bold', 'italic', 'underline', 'strike'],
+				['blockquote'],
+				[{ header: 1 }, { header: 2 }], // custom button values
+				[{ list: 'ordered' }, { list: 'bullet' }],
+				[{ header: [1, 2, 3, 4, 5, 6, false] }],
+				['link', 'image'],
+			],
+			imageUploader: {
+				upload: async (file) => {
+					//Sử dụng cho việc hiển thị hình ảnh
+					const bodyFormData = new FormData();
+					bodyFormData.append('image', file);
+					const response = await axios({
+						method: 'post',
+						url: `https://api.imgbb.com/1/upload?key=${API_KEY_IMGBB}`,
+						data: bodyFormData,
+						headers: {
+							'Content-Type': 'multipart/form-data',
+						},
+					});
+					return response.data.data.url;
+				},
+			},
+		}),
+
+		[]
+	);
 	return (
 		<PostAddNewStyles>
 			<h1 className="dashboard-heading">Add new post</h1>
@@ -195,10 +235,20 @@ const PostAddNew = () => {
 							</span>
 						)}
 					</Field>
-					{/* <Field>
-						<Label>Author</Label>
-						<Input control={control} placeholder="Find the author"></Input>
-					</Field> */}
+				</div>
+
+				<div className="mb-10">
+					<Field>
+						<Label>Content</Label>
+						<div className="w-full entry-content">
+							<ReactQuill
+								modules={modules}
+								theme="snow"
+								value={content}
+								onChange={setContent}
+							/>
+						</div>
+					</Field>
 				</div>
 
 				<div className="grid grid-cols-2 gap-x-10 mb-10">

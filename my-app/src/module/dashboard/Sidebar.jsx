@@ -109,20 +109,9 @@ const sidebarLink = [
 ];
 const SidebarStyles = styled.div`
 	width: 300px;
-	background: #fff;
+	background: #ffffff;
 	box-shadow: 10px 10px 20px rgba(218, 213, 213, 0.15);
 	border-radius: 12px;
-	.sidebar-logo {
-		display: flex;
-		align-items: center;
-		font-weight: 600;
-		gap: 0 20px;
-		padding: 20px 20px 0;
-		margin-bottom: 20px;
-		img {
-			max-width: 40px;
-		}
-	}
 	.menu-item {
 		display: flex;
 		align-items: center;
@@ -138,14 +127,13 @@ const SidebarStyles = styled.div`
 			color: ${(props) => props.theme.primary};
 		}
 	}
+	@media screen and (max-width: 1023.98px) {
+		display: none;
+	}
 `;
 const Sidebar = () => {
 	return (
 		<SidebarStyles>
-			<div className="sidebar-logo">
-				<img srcSet="/logo.png 2x" alt="monkey-blogging" />
-				<span>Monkey Blogging</span>
-			</div>
 			{sidebarLink.map((link) => {
 				if (link.onClick) {
 					return (

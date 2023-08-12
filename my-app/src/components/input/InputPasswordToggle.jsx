@@ -1,14 +1,15 @@
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import Input from './Input';
 import { IconEyeClose, IconEyeOpen } from '../icon';
+import PropTypes from 'prop-types';
 
-const InputPasswordToggle = ({ control }) => {
+const InputPasswordToggle = ({ control, confirm }) => {
 	const [togglePassword, setTogglePassword] = useState(false);
 	if (!control) return null;
 	return (
 		<Fragment>
 			<Input
-				name="password"
+				name={!confirm ? 'password' : 'confirmPassword'}
 				type={`${togglePassword ? 'text' : 'password'}`}
 				placeholder="Enter your password"
 				control={control}
@@ -22,5 +23,8 @@ const InputPasswordToggle = ({ control }) => {
 		</Fragment>
 	);
 };
-
+InputPasswordToggle.propTypes = {
+	control: PropTypes.any,
+	confirm: PropTypes.bool,
+};
 export default InputPasswordToggle;

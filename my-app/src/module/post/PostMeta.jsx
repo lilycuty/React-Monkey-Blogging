@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const PostMetaStyles = styled.div`
 	display: flex;
@@ -24,15 +24,15 @@ const PostMeta = ({
 	date = 'Mar 23',
 	authorName = 'Andiez Le',
 	className = '',
-	to = '/',
+	to = '',
 }) => {
 	return (
 		<PostMetaStyles className={className}>
 			<div className="post-time">{date}</div>
 			<div className="post-dot"></div>
-			<NavLink to={to}>
-				<div className="post-author">{authorName}</div>
-			</NavLink>
+			<Link to={`/author/${to}`}>
+				<div className="post-author three-dot-name">{authorName}</div>
+			</Link>
 		</PostMetaStyles>
 	);
 };

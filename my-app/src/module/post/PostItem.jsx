@@ -3,6 +3,8 @@ import PostCategory from './PostCategory';
 import PostTitle from './PostTitle';
 import PostMeta from './PostMeta';
 import PostImage from './PostImage';
+import slugify from 'slugify';
+import PropTypes from 'prop-types';
 
 const PostItemStyles = styled.div`
 	display: flex;
@@ -27,20 +29,44 @@ const PostItemStyles = styled.div`
 		}
 	}
 `;
-const PostItem = () => {
+
+/**
+ *
+ * @param {*} kind true: no display component PostMeta
+ */
+const PostItem = ({ data, kind = '' }) => {
+	const date = data?.createAt?.seconds
+		? new Date(data.createAt.seconds * 1000)
+		: new Date();
+	const formatDate = new Date(date).toLocaleDateString('vi-VI');
+
+	if (!data) return null;
 	return (
 		<PostItemStyles>
 			<PostImage
-				url="https://images.unsplash.com/photo-1570993492881-25240ce854f4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2290&q=80"
+				url={data?.image || 'Not Update'}
+				to={data?.slug}
 				className="post-image"
 			></PostImage>
-			<PostCategory>Kiến thức</PostCategory>
-			<PostTitle>
-				Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
+			<PostCategory to={data.category.slug}>
+				{data?.category?.name}
+			</PostCategory>
+			<PostTitle to={data.slug} className="three-dot-title">
+				{data?.title}
 			</PostTitle>
-			<PostMeta className="post-info"></PostMeta>
+			{!kind && (
+				<PostMeta
+					className="post-info"
+					authorName={data?.user?.fullname}
+					to={slugify(data?.user?.username || '', { lower: true })}
+					date={formatDate}
+				></PostMeta>
+			)}
 		</PostItemStyles>
 	);
 };
-
+PostItem.propTypes = {
+	data: PropTypes.any,
+	kind: PropTypes.bool,
+};
 export default PostItem;
