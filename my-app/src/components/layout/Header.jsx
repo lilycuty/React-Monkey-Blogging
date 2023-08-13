@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { Button } from '../button';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/auth-context';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebase/firebase-config';
 const meneLinks = [
 	{
 		url: '/',
@@ -23,6 +25,13 @@ const HeaderStyles = styled.div`
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+	}
+	.header-auth {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		column-gap: 10px;
+		cursor: pointer;
 	}
 	.logo {
 		display: block;
@@ -56,6 +65,39 @@ const HeaderStyles = styled.div`
 		transform: translateY(-50%);
 		right: 25px;
 	}
+	.auth {
+		position: relative;
+		width: 52px;
+		height: 52px;
+		&-list {
+			width: 150px;
+			background-color: #f8f8f8;
+			border-radius: 10px;
+			overflow: hidden;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+			margin-top: 15px;
+			display: none;
+		}
+		&-item {
+			padding: 10px;
+			border-bottom: 1px solid red;
+			&:last-child {
+				border-bottom: none;
+			}
+			&:hover {
+				background-color: #ccc;
+			}
+		}
+		&::before {
+			content: '';
+			position: absolute;
+			width: 100px;
+			height: 30px;
+			background-color: transparent;
+			bottom: 0;
+			transform: translateY(60%);
+		}
+	}
 `;
 
 const getLastName = (name) => {
@@ -66,6 +108,9 @@ const getLastName = (name) => {
 
 const Header = () => {
 	const { userInfo } = useAuth();
+	const handleLogout = () => {
+		signOut(auth);
+	};
 	return (
 		<HeaderStyles>
 			<div className="container">
@@ -132,10 +177,31 @@ const Header = () => {
 						</Button>
 					) : (
 						<div className="header-auth">
-							<span>Welcome back, </span>
-							<strong className="text-primary">
-								{getLastName(userInfo?.displayName)}
-							</strong>
+							<div>
+								<span>Welcome back, </span>
+								<strong className="text-primary">
+									{getLastName(userInfo?.displayName)}
+								</strong>
+							</div>
+							<div className="auth group transition-all">
+								<img
+									src={userInfo?.avatar || 'Not Update'}
+									alt={userInfo?.username || 'Not Update'}
+									className="w-full h-full object-cover rounded-full"
+								/>
+								<ul className="auth-list group-hover:inline-block">
+									<li className="auth-item">
+										<NavLink to={'/profile'} className="auth-link">
+											Profile
+										</NavLink>
+									</li>
+									<li className="auth-item">
+										<a className="auth-link" onClick={handleLogout}>
+											Log out
+										</a>
+									</li>
+								</ul>
+							</div>
 						</div>
 					)}
 				</div>

@@ -1,6 +1,6 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const AuthenticationPageStyles = styled.div`
 	min-height: 100vh;
@@ -44,5 +44,7 @@ const AuthenticationPage = ({ children }) => {
 		</AuthenticationPageStyles>
 	);
 };
-
+AuthenticationPage.propTypes = {
+	children: PropTypes.node,
+};
 export default AuthenticationPage;

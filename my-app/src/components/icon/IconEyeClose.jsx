@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 const IconEyeClose = ({ className = '', onClick = () => {} }) => {
 	return (
@@ -34,5 +34,8 @@ const IconEyeClose = ({ className = '', onClick = () => {} }) => {
 		</span>
 	);
 };
-
+IconEyeClose.propTypes = {
+	className: PropTypes.string,
+	onClick: PropTypes.func,
+};
 export default IconEyeClose;

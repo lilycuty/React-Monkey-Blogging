@@ -1,5 +1,5 @@
-import React from 'react';
 import { useDropdown } from './dropdown-context';
+import PropTypes from 'prop-types';
 
 const Search = ({ placeholder, ...props }) => {
 	const { onChange } = useDropdown();
@@ -15,5 +15,7 @@ const Search = ({ placeholder, ...props }) => {
 		</div>
 	);
 };
-
+Search.propTypes = {
+	placeholder: PropTypes.string,
+};
 export default Search;

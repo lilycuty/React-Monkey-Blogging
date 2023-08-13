@@ -9,7 +9,7 @@ const InputPasswordToggle = ({ control, confirm }) => {
 	return (
 		<Fragment>
 			<Input
-				name={!confirm ? 'password' : 'confirmPassword'}
+				name={`${!confirm ? 'password' : 'confirmPassword'}`}
 				type={`${togglePassword ? 'text' : 'password'}`}
 				placeholder="Enter your password"
 				control={control}

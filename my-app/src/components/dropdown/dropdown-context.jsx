@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 
 const DropdownContext = createContext(null);
 
@@ -26,5 +27,7 @@ function useDropdown() {
 	}
 	return context;
 }
-
+DropdownProvider.propTypes = {
+	children: PropTypes.any,
+};
 export { useDropdown, DropdownProvider };

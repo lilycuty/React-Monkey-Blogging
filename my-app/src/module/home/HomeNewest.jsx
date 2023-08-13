@@ -50,7 +50,6 @@ const HomeNewest = () => {
 		});
 	}, []);
 	const [first, ...other] = posts;
-	console.log('HomeNewest ~ other', other);
 	if (posts.length <= 0) return;
 	return (
 		<HomeNewestStyles className="home-block">

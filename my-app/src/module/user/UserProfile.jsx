@@ -1,42 +1,71 @@
 import { useForm } from 'react-hook-form';
 import { Label } from '../../components/label';
-import { Input, InputPasswordToggle } from '../../components/input';
+import { Input } from '../../components/input';
 import { Button } from '../../components/button';
 import DashboardHeading from '../dashboard/DashboardHeading';
 import ImageUpload from '../../components/image/ImageUpload';
 import { Field } from '../../components/field';
 import { useEffect } from 'react';
 import { db } from '../../firebase/firebase-config';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { TextArea } from '../../components/textarea';
 import { useAuth } from '../../contexts/auth-context';
+import useFirebaseImage from '../../hooks/useFirebaseImage';
+import { toast } from 'react-toastify';
 
 const UserProfile = () => {
 	const { userInfo } = useAuth();
 	console.log('UserProfile ~ userInfo', userInfo);
-	const { control, reset, handleSubmit } = useForm({
+
+	const { control, reset, handleSubmit, getValues, setValue } = useForm({
 		mode: 'onChange',
 	});
+
+	const imageUrl = getValues('avatar');
+	//Dùng regex get ra tên file của ảnh trong filebase
+	const imageRegex = /%2F(\S+)\?/gm.exec(imageUrl);
+	const imageName = imageRegex?.length > 0 ? imageRegex[1] : '';
+
+	const { progress, image, handleDeleteImage, handleSelectImage, setImage } =
+		useFirebaseImage(setValue, getValues, imageName, deleteAvatar);
+
 	useEffect(() => {
 		async function getDataUser() {
 			if (userInfo) {
 				const colRef = doc(db, 'users', userInfo.id);
 				const docSnapshot = await getDoc(colRef);
-				// console.log('getDataUser ~ docSnapshot', docSnapshot.data());
 				reset(docSnapshot.data());
 			}
 		}
 		getDataUser();
 	}, [reset, userInfo]);
-	const handleUpdateProfile = (values) => {
-		console.log('handleUpdateProfile ~ values', values);
-		const passwordConfirm = values.confirmPassword;
-		if (values.password === passwordConfirm) {
-			console.log('Update thanh cong');
-		} else {
-			console.log('That bai roi cung');
+
+	useEffect(() => {
+		setImage(imageUrl);
+	}, [imageUrl, setImage]);
+
+	async function deleteAvatar() {
+		const colRef = doc(db, 'users', userInfo.id);
+		await updateDoc(colRef, {
+			avatar: '',
+		});
+	}
+
+	const handleUpdateProfile = async (values) => {
+		try {
+			const colRef = doc(db, 'users', userInfo.id);
+			await updateDoc(colRef, {
+				...values,
+				avatar: image,
+			});
+			toast.success('Update user successfully!');
+			console.log('handleUpdateProfile ~ values', values);
+		} catch (error) {
+			console.log('handleUpdateUser ~ error', error);
+			toast.error('Update user failed!');
 		}
 	};
+
 	if (!userInfo) return;
 	return (
 		<div>
@@ -46,7 +75,13 @@ const UserProfile = () => {
 			></DashboardHeading>
 			<form onSubmit={handleSubmit(handleUpdateProfile)}>
 				<div className="text-center w-[200px] h-[200px] mx-auto rounded-full mb-10">
-					<ImageUpload className="w-[200px] h-[200px] !rounded-full min-h-0 mx-auto"></ImageUpload>
+					<ImageUpload
+						className="!rounded-full h-full"
+						image={image}
+						onChange={handleSelectImage}
+						progress={progress}
+						handleDeleteImage={handleDeleteImage}
+					></ImageUpload>
 				</div>
 
 				<div className="form-layout">
@@ -103,12 +138,12 @@ const UserProfile = () => {
 					</Field>
 				</div>
 
-				<div className="form-layout">
+				{/* <div className="form-layout">
 					<Field>
 						<Label>New Password</Label>
 						<InputPasswordToggle
 							control={control}
-							name="password"
+							name="newPassword"
 							type="password"
 							placeholder="Enter your password"
 						></InputPasswordToggle>
@@ -123,7 +158,7 @@ const UserProfile = () => {
 							confirm
 						></InputPasswordToggle>
 					</Field>
-				</div>
+				</div> */}
 
 				<Button type="submit" kind="primary" className="mx-auto w-[200px]">
 					Update

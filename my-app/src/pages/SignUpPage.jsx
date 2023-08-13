@@ -52,8 +52,7 @@ const SignUpPage = () => {
 
 		await updateProfile(auth.currentUser, {
 			displayName: values.fullname,
-			photoURL:
-				'https://cdnimg.vietnamplus.vn/uploaded/mzdic/2022_12_21/messihieusuatghiban1.jpg',
+			photoURL: '',
 		});
 
 		await setDoc(doc(db, 'users', auth.currentUser.uid), {
@@ -65,8 +64,7 @@ const SignUpPage = () => {
 				trim: true,
 				replacement: ' ',
 			}),
-			avatar:
-				'https://cdnimg.vietnamplus.vn/uploaded/mzdic/2022_12_21/messihieusuatghiban1.jpg',
+			avatar: '',
 			status: 1,
 			role: 3,
 			createdAt: serverTimestamp(),

@@ -53,17 +53,9 @@ Not Done
 thị ...-> DONE
 - Component Add New Post chưa sử dụng React Quill -> DONE
 - Hiển thị các bài viết của user đang đăng nhập -> DONE
+- Chưa có trang Updade Profile -> DONE
+- Trang Home thêm avatar bên cạnh tên và khi Hover vào có nút log-out -> DONE
 - Bắt lỗi với error boundary
-- Trang Home thêm avatar bên cạnh tên và khi Hover vào có nút log-out
 - Khi đăng nhập xong kiểm tra nếu role bằng 1 2 -> có nút button Dashboard để điều hướng sang dashboard
-- Chưa có trang Updade Profile
-- Add Footer cho trang web
+- Validate các trường Input còn lại
 -->
-
-<!-- Challenges
-- Update profile
-- Author Page
-- PropTypes
-- Error boundary
-- UI UX
-  -->
